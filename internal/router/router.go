@@ -11,6 +11,7 @@ func NewRouter() *http.ServeMux {
 
 	mux.HandleFunc("/", handlers.HomePage)
 	mux.HandleFunc("/api", handlers.InfoApi)
+	mux.HandleFunc("/api/", handlers.InfoApi)
 
 	return mux
 }
