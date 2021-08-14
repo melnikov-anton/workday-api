@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"html/template"
+	"log"
 	"net/http"
 )
 
@@ -11,7 +13,17 @@ func HomePage(rw http.ResponseWriter, r *http.Request) {
 		rw.Write([]byte("<h4>Page not found</h4>"))
 		return
 	}
-	rw.Header().Set("Content-Type", "text/html")
-	rw.WriteHeader(http.StatusOK)
-	rw.Write([]byte("<h2>Welcome to the home page</h2>"))
+
+	ts, err := template.ParseFiles("templates/home.page.tmpl")
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(rw, "Internal Server Error", 500)
+		return
+	}
+
+	err = ts.Execute(rw, nil)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(rw, "Internal Server Error", 500)
+	}
 }
