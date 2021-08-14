@@ -13,5 +13,8 @@ func NewRouter() *http.ServeMux {
 	mux.HandleFunc("/api", handlers.InfoApi)
 	mux.HandleFunc("/api/", handlers.InfoApi)
 
+	fs := http.FileServer(http.Dir("static/"))
+	mux.Handle("/static/", http.StripPrefix("/static/", fs))
+
 	return mux
 }
