@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"path/filepath"
 )
 
 func HomePage(rw http.ResponseWriter, r *http.Request) {
@@ -14,7 +15,7 @@ func HomePage(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ts, err := template.ParseFiles("templates/home.page.tmpl")
+	ts, err := template.ParseFiles(filepath.Join(appConfig.AppRootDir, "templates", "home.page.tmpl"))
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(rw, "Internal Server Error", 500)
