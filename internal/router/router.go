@@ -4,16 +4,17 @@ import (
 	"net/http"
 	"path/filepath"
 
+	"github.com/gorilla/mux"
 	"github.com/melnikov-anton/workday-api/internal/config"
 	"github.com/melnikov-anton/workday-api/internal/handlers"
 )
 
 var appConfig *config.AppConfig
 
-func NewRouter(app *config.AppConfig) *http.ServeMux {
+func NewRouter(app *config.AppConfig) *mux.Router {
 	appConfig = app
 
-	mux := http.NewServeMux()
+	mux := mux.NewRouter()
 
 	mux.HandleFunc("/", handlers.HomePage)
 	mux.HandleFunc("/api", handlers.InfoApi)
@@ -21,7 +22,8 @@ func NewRouter(app *config.AppConfig) *http.ServeMux {
 
 	staticDir := filepath.Join(appConfig.AppRootDir, "static")
 	fs := http.FileServer(http.Dir(staticDir))
-	mux.Handle("/static/", http.StripPrefix("/static/", fs))
+	//mux.Handle("/static/", http.StripPrefix("/static/", fs))
+	mux.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
 
 	return mux
 }
