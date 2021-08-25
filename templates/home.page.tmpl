@@ -12,7 +12,13 @@
         <h1 class="header">Is today a workday?</h1>
         <img class="go-image" src="/static/gomasc.png" alt="Go">
         <div class="info">
-            <h2>Today is ...</h2>
+            <h2>
+                {{ if .IsWorkday}} 
+                    Crap! Today is workday. 
+                {{ else }}
+                    Yeah! Today is holiday!
+                {{ end }}
+            </h2>
         </div>
     </div>
     

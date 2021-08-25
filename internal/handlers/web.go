@@ -5,8 +5,14 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"time"
 )
 
+type TemplateData struct {
+	IsWorkday bool
+}
+
+// HomePage shows home page of the app
 func HomePage(rw http.ResponseWriter, r *http.Request) {
 	if r.RequestURI != "/" {
 		rw.Header().Set("Content-Type", "text/html")
@@ -22,7 +28,17 @@ func HomePage(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = ts.Execute(rw, nil)
+	todayString := time.Now().Format("2006.01.02")
+	isWorkday, err := IsDateWorkday(todayString, "ru")
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(rw, "Internal Server Error", 500)
+	}
+	tmplData := TemplateData{
+		IsWorkday: isWorkday,
+	}
+
+	err = ts.Execute(rw, tmplData)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(rw, "Internal Server Error", 500)
