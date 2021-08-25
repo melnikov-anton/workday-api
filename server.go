@@ -23,6 +23,7 @@ func main() {
 		log.Fatal(err)
 	}
 	app.AppRootDir = dir
+	app.AppDataDir = filepath.Join(dir, "data")
 	handlers.InitHandlers(&app)
 
 	router := router.NewRouter(&app)
