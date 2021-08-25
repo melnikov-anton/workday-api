@@ -10,7 +10,9 @@ RUN go build -o workday .
 
 WORKDIR /dist
 RUN cp /build/workday .
-RUN cp -r /build/static/. /dist/static/ && cp -r /build/templates/. /dist/templates/
+RUN cp -r /build/static/. /dist/static/ && \
+    cp -r /build/templates/. /dist/templates/ && \
+    cp -r /build/data/. /dist/data/
 
 
 FROM alpine
