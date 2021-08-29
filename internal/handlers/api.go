@@ -34,10 +34,10 @@ func InfoApi(rw http.ResponseWriter, r *http.Request) {
 	resp, err := json.Marshal(respData)
 	if err != nil {
 		log.Println(err)
+		sendErrorJsonResponse(rw, []byte("Internal Server Error"), http.StatusInternalServerError)
+		return
 	}
-	rw.Header().Set("Content-Type", "application/json")
-	rw.WriteHeader(http.StatusOK)
-	rw.Write(resp)
+	sendJsonResponse(rw, resp, http.StatusOK)
 }
 
 // WorkdayToday shows whether today is workday
@@ -49,6 +49,8 @@ func WorkdayToday(rw http.ResponseWriter, r *http.Request) {
 	isWorkday, err := IsDateWorkday(todayString, countryCode)
 	if err != nil {
 		log.Println(err)
+		sendErrorJsonResponse(rw, []byte("No data found"), http.StatusNotFound)
+		return
 	}
 	respData := StandartResponseData{
 		DateString: todayString,
@@ -58,10 +60,10 @@ func WorkdayToday(rw http.ResponseWriter, r *http.Request) {
 	resp, err := json.Marshal(respData)
 	if err != nil {
 		log.Println(err)
+		sendErrorJsonResponse(rw, []byte("Internal Server Error"), http.StatusInternalServerError)
+		return
 	}
-	rw.Header().Set("Content-Type", "application/json")
-	rw.WriteHeader(http.StatusOK)
-	rw.Write(resp)
+	sendJsonResponse(rw, resp, http.StatusOK)
 }
 
 func IsDateWorkday(dateStr, countryCode string) (bool, error) {
