@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -40,20 +41,38 @@ func InfoApi(rw http.ResponseWriter, r *http.Request) {
 	sendJsonResponse(rw, resp, http.StatusOK)
 }
 
-// WorkdayToday shows whether today is workday
-func WorkdayToday(rw http.ResponseWriter, r *http.Request) {
+// WorkdayDate shows whether date is workday
+func WorkdayDate(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
+	var date time.Time
 	countryCode := vars["cc"]
-	today := time.Now()
-	todayString := today.Format("2006.01.02")
-	isWorkday, err := IsDateWorkday(todayString, countryCode)
+	dateStr := vars["date"]
+
+	if dateStr == "today" {
+		date = time.Now()
+		dateStr = date.Format("2006.01.02")
+	} else {
+		matched, err := regexp.MatchString(`\d{4}-\d{2}-\d{2}`, dateStr)
+		if err != nil {
+			log.Println(err)
+			sendErrorJsonResponse(rw, []byte("Internal Server Error"), http.StatusInternalServerError)
+			return
+		}
+		if !matched {
+			sendErrorJsonResponse(rw, []byte("Wrong date format - required YYYY-MM-DD"), http.StatusBadRequest)
+			return
+		}
+		dateStr = strings.Replace(dateStr, "-", ".", 2)
+	}
+
+	isWorkday, err := IsDateWorkday(dateStr, countryCode)
 	if err != nil {
 		log.Println(err)
 		sendErrorJsonResponse(rw, []byte("No data found"), http.StatusNotFound)
 		return
 	}
 	respData := StandartResponseData{
-		DateString: todayString,
+		DateString: dateStr,
 		IsWorkday:  isWorkday,
 	}
 
