@@ -5,6 +5,7 @@
 }
 body {
     width: 100vw;
+    background-color: #EFF0F2;
 }
 
 .main {
@@ -34,4 +35,24 @@ body {
     justify-content: center;
     padding: 15px;
     background-color: #A0CAEE;
+}
+
+.description {
+    width: 500px;
+    height: auto;
+    margin-top: 30px;
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: 15px;
+    background-color: #F4A026;
+    line-height: 1.5em;
+}
+
+.description h3 {
+    text-align: center;
+    padding-bottom: 10px;
+}
+
+a {
+    color: inherit;
 }
