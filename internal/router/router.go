@@ -20,6 +20,9 @@ func NewRouter(app *config.AppConfig) *mux.Router {
 	mux.HandleFunc("/api", handlers.InfoApi)
 	mux.HandleFunc("/api/", handlers.InfoApi)
 	mux.HandleFunc("/api/{cc}/workday/{date}", handlers.WorkdayDate)
+	mux.HandleFunc("/api/{cc}/workday/{date}/", handlers.WorkdayDate)
+	mux.HandleFunc("/api/{cc}/workday/{date}/simple", handlers.WorkdayDateSimple)
+	mux.HandleFunc("/api/{cc}/workday/{date}/simple/", handlers.WorkdayDateSimple)
 
 	staticDir := filepath.Join(appConfig.AppRootDir, "static")
 	fs := http.FileServer(http.Dir(staticDir))

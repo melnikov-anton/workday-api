@@ -28,3 +28,10 @@ func sendErrorJsonResponse(rw http.ResponseWriter, body []byte, code int) {
 	rw.WriteHeader(code)
 	rw.Write([]byte(resp))
 }
+
+// sendSimpleResponse sends simple text response
+func sendSimpleResponse(rw http.ResponseWriter, body []byte, code int) {
+	rw.Header().Set("Content-Type", "text/plain")
+	rw.WriteHeader(code)
+	rw.Write(body)
+}

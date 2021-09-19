@@ -43,26 +43,17 @@ func InfoApi(rw http.ResponseWriter, r *http.Request) {
 
 // WorkdayDate shows whether date is workday
 func WorkdayDate(rw http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	var date time.Time
-	countryCode := vars["cc"]
-	dateStr := vars["date"]
 
-	if dateStr == "today" {
-		date = time.Now()
-		dateStr = date.Format("2006.01.02")
-	} else {
-		matched, err := regexp.MatchString(`\d{4}-\d{2}-\d{2}`, dateStr)
-		if err != nil {
-			log.Println(err)
-			sendErrorJsonResponse(rw, []byte("Internal Server Error"), http.StatusInternalServerError)
-			return
-		}
-		if !matched {
+	dateStr, countryCode, err := getDateAndCountryCode(r)
+	if err != nil {
+		log.Println(err)
+		switch err.Error() {
+		case "wrong date format":
 			sendErrorJsonResponse(rw, []byte("Wrong date format - required YYYY-MM-DD"), http.StatusBadRequest)
-			return
+		default:
+			sendErrorJsonResponse(rw, []byte("Internal Server Error"), http.StatusInternalServerError)
 		}
-		dateStr = strings.Replace(dateStr, "-", ".", 2)
+		return
 	}
 
 	isWorkday, err := IsDateWorkday(dateStr, countryCode)
@@ -83,6 +74,59 @@ func WorkdayDate(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sendJsonResponse(rw, resp, http.StatusOK)
+}
+
+// WorkdayDateSimple returns simple response (1 = workday, 0 = holyday or error code)
+func WorkdayDateSimple(rw http.ResponseWriter, r *http.Request) {
+	dateStr, countryCode, err := getDateAndCountryCode(r)
+	if err != nil {
+		log.Println(err)
+		switch err.Error() {
+		case "wrong date format":
+			sendSimpleResponse(rw, []byte("400"), http.StatusBadRequest)
+		default:
+			sendSimpleResponse(rw, []byte("500"), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	isWorkday, err := IsDateWorkday(dateStr, countryCode)
+	if err != nil {
+		log.Println(err)
+		sendSimpleResponse(rw, []byte("404"), http.StatusNotFound)
+		return
+	}
+	if isWorkday {
+		sendSimpleResponse(rw, []byte("1"), http.StatusOK)
+		return
+	} else {
+		sendSimpleResponse(rw, []byte("0"), http.StatusOK)
+		return
+	}
+}
+
+func getDateAndCountryCode(r *http.Request) (string, string, error) {
+	vars := mux.Vars(r)
+	var date time.Time
+	countryCode := vars["cc"]
+	dateStr := vars["date"]
+
+	if dateStr == "today" {
+		date = time.Now()
+		dateStr = date.Format("2006.01.02")
+		return dateStr, countryCode, nil
+	} else {
+		matched, err := regexp.MatchString(`\d{4}-\d{2}-\d{2}`, dateStr)
+		if err != nil {
+			log.Println(err)
+			return "", "", errors.New("internal server error")
+		}
+		if !matched {
+			return "", "", errors.New("wrong date format")
+		}
+		dateStr = strings.Replace(dateStr, "-", ".", 2)
+		return dateStr, countryCode, nil
+	}
 }
 
 func IsDateWorkday(dateStr, countryCode string) (bool, error) {
