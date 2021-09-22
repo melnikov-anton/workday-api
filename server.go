@@ -10,6 +10,7 @@ import (
 
 	"github.com/melnikov-anton/workday-api/internal/config"
 	"github.com/melnikov-anton/workday-api/internal/handlers"
+	"github.com/melnikov-anton/workday-api/internal/middleware"
 	"github.com/melnikov-anton/workday-api/internal/router"
 )
 
@@ -32,5 +33,5 @@ func main() {
 
 	fmt.Printf("Starting server on port %s ...\n", *portNumb)
 
-	log.Fatal(http.ListenAndServe(*portNumb, router))
+	log.Fatal(http.ListenAndServe(*portNumb, middleware.RemoveTrailingSlash(router)))
 }
