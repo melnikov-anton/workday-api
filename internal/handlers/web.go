@@ -33,6 +33,7 @@ func HomePage(rw http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(rw, "Internal Server Error", 500)
+		return
 	}
 	tmplData := TemplateData{
 		IsWorkday: isWorkday,
