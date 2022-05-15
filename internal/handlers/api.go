@@ -16,6 +16,11 @@ import (
 	"github.com/gorilla/mux"
 )
 
+const (
+	STATUS_INTERNAL_SERVER_ERROR = "Internal Server Error"
+	MESSAGE_WRONG_DATE_FORMAT    = "wrong date format"
+)
+
 type RespData struct {
 	Message string `json:"message"`
 	Time    string `json:"time"`
@@ -35,7 +40,7 @@ func InfoApi(rw http.ResponseWriter, r *http.Request) {
 	resp, err := json.Marshal(respData)
 	if err != nil {
 		log.Println(err)
-		sendErrorJsonResponse(rw, []byte("Internal Server Error"), http.StatusInternalServerError)
+		sendErrorJsonResponse(rw, []byte(STATUS_INTERNAL_SERVER_ERROR), http.StatusInternalServerError)
 		return
 	}
 	sendJsonResponse(rw, resp, http.StatusOK)
@@ -48,10 +53,10 @@ func WorkdayDate(rw http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 		switch err.Error() {
-		case "wrong date format":
+		case MESSAGE_WRONG_DATE_FORMAT:
 			sendErrorJsonResponse(rw, []byte("Wrong date format - required YYYY-MM-DD"), http.StatusBadRequest)
 		default:
-			sendErrorJsonResponse(rw, []byte("Internal Server Error"), http.StatusInternalServerError)
+			sendErrorJsonResponse(rw, []byte(STATUS_INTERNAL_SERVER_ERROR), http.StatusInternalServerError)
 		}
 		return
 	}
@@ -70,7 +75,7 @@ func WorkdayDate(rw http.ResponseWriter, r *http.Request) {
 	resp, err := json.Marshal(respData)
 	if err != nil {
 		log.Println(err)
-		sendErrorJsonResponse(rw, []byte("Internal Server Error"), http.StatusInternalServerError)
+		sendErrorJsonResponse(rw, []byte(STATUS_INTERNAL_SERVER_ERROR), http.StatusInternalServerError)
 		return
 	}
 	sendJsonResponse(rw, resp, http.StatusOK)
@@ -82,7 +87,7 @@ func WorkdayDateSimple(rw http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 		switch err.Error() {
-		case "wrong date format":
+		case MESSAGE_WRONG_DATE_FORMAT:
 			sendSimpleResponse(rw, []byte("400"), http.StatusBadRequest)
 		default:
 			sendSimpleResponse(rw, []byte("500"), http.StatusInternalServerError)
@@ -122,7 +127,7 @@ func getDateAndCountryCode(r *http.Request) (string, string, error) {
 			return "", "", errors.New("internal server error")
 		}
 		if !matched {
-			return "", "", errors.New("wrong date format")
+			return "", "", errors.New(MESSAGE_WRONG_DATE_FORMAT)
 		}
 		dateStr = strings.Replace(dateStr, "-", ".", 2)
 		return dateStr, countryCode, nil
