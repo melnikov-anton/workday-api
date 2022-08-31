@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: workday-api
+  labels:
+    name: workday-api
+spec:
+  rules:
+  - host: workdayapp.local
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: workday-service
+            port: 
+              number: 9000

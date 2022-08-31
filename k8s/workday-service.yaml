@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: workday-service
+spec:
+  selector:
+    app: workday-api
+  ports:
+  - port: 9000
+    targetPort: 80
