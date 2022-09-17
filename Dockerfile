@@ -17,5 +17,5 @@ RUN cp -r /build/static/. /dist/static/ && \
 
 FROM alpine
 COPY --from=builder /dist /dist/
-EXPOSE 80
-CMD ["/dist/workday", "-port", "80"]
+EXPOSE 8080
+CMD ["/dist/workday", "-port", "8080"]
