@@ -37,3 +37,20 @@ and you get an answer like:
   "is_workday": true
 }
 ```
+
+## Kubernetes
+**Generate self-signed certificate and key**
+```bash
+openssl req -x509 -newkey rsa:4096 -nodes -keyout key.pem -out cert.pem -sha256 -days 365 -subj '/CN=workday-app.local'
+```
+
+
+**Create secret with TLS certificates**  
+```bash
+kubectl create secret tls workday-tls --key="key.pem" --cert="cert.pem" -n workday-app-ns
+```
+
+**How convert \*.key and \*.crt files to one-line base64 encoded**  
+```bash
+openssl base64 -A -in cert.pem -out one-line-cert-base64.pem
+```

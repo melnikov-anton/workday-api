@@ -1,0 +1,41 @@
+# run: kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
+# if x509 certificate is not valid ingress-nginx-controller-admission.ingress-nginx.svc
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: workday-ingress
+  namespace: workday-app-ns
+  # Depricated - use ingressClassName: nginx
+  # annotations:
+  #   kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+  - hosts:
+      - workday-app.local
+    secretName: workday-tls
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: workday-service
+            port:
+              number: 9000
+    host: workday-app.local
+
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: workday-ingress
+#   namespace: workday-app-ns
+#   annotations:
+#     kubernetes.io/ingress.class: nginx
+# spec:
+#   defaultBackend:
+#     service:
+#       name: workday-service
+#       port:
+#         number: 9000
